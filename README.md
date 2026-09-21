@@ -160,6 +160,36 @@ We provide an API with methods and fields, performing one, scoped type of work. 
 
 SDK supports OpenId Connect methods provided by Saleor API. They are under `auth` object and `useAuth` hook. For more usage details, please check https://docs.saleor.io/docs/3.0/developer/available-plugins/openid-connect.
 
+### Budget guard
+
+`evaluateBudgetGuard` applies the frozen Budget Guard contract v0 to a requested discount and reports how much of it may be applied against the configured budget.
+
+```ts
+import { evaluateBudgetGuard } from "@saleor/sdk";
+
+const result = evaluateBudgetGuard({
+  requestedDiscountAmount: 80,
+  currency: "USD",
+  budget: {
+    limitAmount: 100,
+    spentAmount: 30,
+    windowStart: "2026-01-01T00:00:00.000Z",
+    windowEnd: "2026-12-31T23:59:59.000Z",
+    enabled: true,
+  },
+});
+
+// {
+//   guardStatus: "CAPPED",
+//   guardReasonCode: "BUDGET_PARTIALLY_EXHAUSTED",
+//   requestedDiscountAmount: 80,
+//   appliedDiscountAmount: 70,
+//   remainingBudgetAmount: 70,
+// }
+```
+
+Without a `budget` (or with `enabled: false`) the request passes through unchanged as `NOT_CONFIGURED`. Guard statuses and reason codes are exported as `BUDGET_GUARD_STATUS` and `BUDGET_GUARD_REASON_CODE`, and amounts are always computed in the integer minor units of the given currency.
+
 ## Local development
 
 Our aim it to build SDK, highly configurable, as a separate package, which you will not require modifications. Although if you want to alter the project, especially if you want to contribute, it is possible to develop storefront and SDK simultaneously. To do this, you need
