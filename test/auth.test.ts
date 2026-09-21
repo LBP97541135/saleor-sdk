@@ -11,10 +11,15 @@ import {
   TEST_AUTH_SECOND_PASSWORD,
 } from "../src/config";
 import { storage } from "../src/core/storage";
+import { SALEOR_HEALTH_PATH } from "../src/health/probe";
 import { setupMockServer, setupSaleorClient } from "./setup";
 import { loginWithExternalPlugin } from "./utils";
 
 describe("auth api", () => {
+  it("SALEOR_HEALTH_PATH should be /api/health", () => {
+    expect(SALEOR_HEALTH_PATH).toBe("/api/health");
+  });
+
   const saleor = setupSaleorClient();
   const mockServer = setupMockServer();
 
